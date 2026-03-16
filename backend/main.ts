@@ -1,0 +1,59 @@
+import "dotenv/config";
+import express, { Express, Request, Response } from "express";
+import cors from "cors";
+import logger from "morgan";
+import os from "os";
+import userRouter from "./src/User/router";
+import uploadRouter from "./upload/router";
+import taskRouter from "./src/Task/router";
+
+const app: Express = express();
+const port = Number(process.env.PORT || 8888);
+
+function getLocalIpAddresses() {
+  const interfaces = os.networkInterfaces();
+  const ipAddresses: string[] = [];
+
+  Object.values(interfaces).forEach((iface) => {
+    if (iface) {
+      iface.forEach((details) => {
+        if (details.family === "IPv4" && !details.internal) {
+          ipAddresses.push(details.address);
+        }
+      });
+    }
+  });
+
+  return ipAddresses;
+}
+
+const corsOptions: cors.CorsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(logger("dev"));
+app.options("*", cors(corsOptions));
+
+app.use("/api/user", userRouter);
+app.use("/api/uploads", uploadRouter);
+app.use("/api/tasks", taskRouter);
+
+app.get("/", (_req: Request, res: Response) => {
+  res.json({ message: "Backend running", db: "sqlite" });
+});
+
+app.listen(port, "0.0.0.0", () => {
+  const ipAddresses = getLocalIpAddresses();
+  console.log(`Server running on port ${port}`);
+  console.log("Server can be accessed at:");
+  console.log(`- Local: http://localhost:${port}`);
+  ipAddresses.forEach((ip) => {
+    console.log(`- Network: http://${ip}:${port}`);
+  });
+});

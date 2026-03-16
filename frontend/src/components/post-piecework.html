@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Piecework · Pieceworks Zambia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ====== reuse exact same CSS variables ====== */
+        :root {
+            --primary-blue: #0F2B5B;
+            --secondary-orange: #F9A826;
+            --accent-green: #2E8B57;
+            --light-blue: #E8F1FF;
+            --light-gray: #F8F9FA;
+            --medium-gray: #6C757D;
+            --dark-gray: #343A40;
+            --white: #FFFFFF;
+            --shadow: 0 2px 6px rgba(15, 43, 91, 0.08);
+            --border-radius: 6px;
+            --transition: all 0.2s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+        }
+        
+        h1 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.8rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .back-link i {
+            margin-right: 0.3rem;
+            transition: transform 0.2s;
+        }
+        .back-link:hover i {
+            transform: translateX(-3px);
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid var(--light-blue);
+            margin: 1.8rem 0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: var(--primary-blue);
+        }
+        
+        label i {
+            color: var(--secondary-orange);
+            width: 18px;
+            margin-right: 0.2rem;
+        }
+        
+        input, select, textarea {
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-orange);
+            box-shadow: 0 0 0 3px rgba(249, 168, 38, 0.1);
+        }
+        
+        .readonly-input {
+            background-color: var(--light-gray);
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .time-group {
+            display: flex;
+            gap: 0.8rem;
+        }
+        .time-group input {
+            flex: 1;
+        }
+        
+        .btn-submit {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1.5rem;
+            width: 100%;
+            letter-spacing: 0.5px;
+        }
+        .btn-submit:hover {
+            background-color: #236b43;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(46, 139, 87, 0.25);
+        }
+        
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+            margin-top: 0.3rem;
+        }
+        
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to tasks</a>
+        <h1><i class="fas fa-pen-to-square" style="color: var(--secondary-orange);"></i> Post a Piecework</h1>
+        <p style="color: var(--medium-gray); margin-bottom: 1.5rem;">Fill in the details exactly as they should appear on the task card.</p>
+        
+        <form id="postPieceworkForm">
+            <div class="form-grid">
+                <!-- LEFT COLUMN / BASIC INFO -->
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Job Title *</label>
+                    <input type="text" id="title" placeholder="e.g. House Cleaning Needed" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-folder"></i> Category *</label>
+                    <select id="category" required>
+                        <option value="">Select category</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Moving">Moving</option>
+                        <option value="Repairs">Repairs</option>
+                        <option value="Tutoring">Tutoring</option>
+                        <option value="Delivery">Delivery</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <!-- Job ID: auto-generated, read-only -->
+                <div class="form-group">
+                    <label><i class="fas fa-hashtag"></i> Job ID (auto)</label>
+                    <input type="text" id="jobId" class="readonly-input" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-circle"></i> Status</label>
+                    <select id="status">
+                        <option value="Open" selected>Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                
+                <!-- LOCATION & DATE -->
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location *</label>
+                    <input type="text" id="location" placeholder="e.g. Lusaka, Woodlands" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="far fa-calendar-alt"></i> Date(s) *</label>
+                    <input type="text" id="date" placeholder="e.g. Sat, 15 Feb  or  Every Mon, Wed" required>
+                </div>
+                
+                <!-- TIME RANGE -->
+                <div class="form-group">
+                    <label><i class="far fa-clock"></i> Start time</label>
+                    <input type="text" id="startTime" placeholder="e.g. 09:00">
+                </div>
+                <div class="form-group">
+                    <label><i class="far fa-clock"></i> End time</label>
+                    <input type="text" id="endTime" placeholder="e.g. 12:00">
+                </div>
+                
+                <!-- PRICING BLOCK -->
+                <div class="form-group">
+                    <label><i class="fas fa-coins"></i> Offer price *</label>
+                    <input type="text" id="offerPrice" placeholder="e.g. K 350" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-cubes"></i> Unit definition *</label>
+                    <input type="text" id="unitDef" placeholder="per task / per hour / per bag" required>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label><i class="fas fa-chart-line"></i> Estimated earning range</label>
+                    <input type="text" id="estEarning" placeholder="e.g. Est. K350-K400  (optional)">
+                </div>
+                
+                <!-- DESCRIPTION -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-align-left"></i> Short description *</label>
+                    <textarea id="shortDesc" rows="2" placeholder="Briefly describe the task (max 100 characters)" maxlength="100" required></textarea>
+                    <span class="helper-text">Will appear in one line on the card.</span>
+                </div>
+                
+                <!-- EMPLOYER DETAILS -->
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Employer name *</label>
+                    <input type="text" id="employerName" placeholder="e.g. Mutinta K." required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> Employer ID *</label>
+                    <input type="text" id="employerId" placeholder="e.g. ZM87654" required>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="verified" checked>
+                    <label for="verified" style="margin-bottom: 0;"><i class="fas fa-check-circle"></i> Verified employer</label>
+                </div>
+                
+                <!-- IMAGE URL (thumbnail) -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-image"></i> Thumbnail image URL</label>
+                    <input type="url" id="imageUrl" placeholder="https://... (leave empty for default)">
+                    <span class="helper-text">Use an image from Unsplash or similar.</span>
+                </div>
+                
+                <!-- AUTO ACCEPTANCE TIMESTAMP – usually not set when posting, but we include for completeness -->
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Acceptance timestamp</label>
+                    <input type="text" id="acceptedTimestamp" placeholder="leave empty for 'pending'">
+                </div>
+            </div>
+            
+            <hr>
+            <button type="submit" class="btn-submit"><i class="fas fa-cloud-upload-alt"></i> Post Piecework Now</button>
+        </form>
+    </div>
+
+    <script>
+        // ---------- GENERATE UNIQUE JOB ID (like PW-250211-01) ----------
+        function generateJobId() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 90 + 10); // two digits
+            return `PW-${year}${month}${day}-${random}`;
+        }
+
+        // Auto-fill Job ID on page load
+        document.getElementById('jobId').value = generateJobId();
+
+        // ---------- HANDLE FORM SUBMISSION ----------
+        document.getElementById('postPieceworkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Gather all fields
+            const task = {
+                id: document.getElementById('jobId').value,
+                status: document.getElementById('status').value,
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                location: document.getElementById('location').value,
+                date: document.getElementById('date').value,
+                startTime: document.getElementById('startTime').value || 'Flexible',
+                endTime: document.getElementById('endTime').value || 'Flexible',
+                offerPrice: document.getElementById('offerPrice').value,
+                unitDef: document.getElementById('unitDef').value,
+                estEarning: document.getElementById('estEarning').value || '',
+                shortDesc: document.getElementById('shortDesc').value,
+                employerName: document.getElementById('employerName').value,
+                employerId: document.getElementById('employerId').value,
+                verified: document.getElementById('verified').checked,
+                imageUrl: document.getElementById('imageUrl').value || 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600',
+                acceptedTimestamp: document.getElementById('acceptedTimestamp').value || null
+            };
+
+            // Get existing tasks from localStorage
+            const stored = localStorage.getItem('pieceworks_tasks');
+            let tasks = stored ? JSON.parse(stored) : [];
+
+            // Add new task
+            tasks.push(task);
+
+            // Save back to localStorage
+            localStorage.setItem('pieceworks_tasks', JSON.stringify(tasks));
+
+            // Show success message and redirect to main page
+            alert('Piecework posted successfully! It will appear in the task list.');
+            window.location.href = 'index.html';
+        });
+
+        // Optional: Regenerate ID if you want a fresh one (user can refresh page)
+    </script>
+</body>
+</html>

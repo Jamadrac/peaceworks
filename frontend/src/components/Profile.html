@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Pieceworks Zambia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ====== CSS VARIABLES (same as main site) ====== */
+        :root {
+            --primary-blue: #0F2B5B;
+            --secondary-orange: #F9A826;
+            --accent-green: #2E8B57;
+            --light-blue: #E8F1FF;
+            --light-gray: #F8F9FA;
+            --medium-gray: #6C757D;
+            --dark-gray: #343A40;
+            --white: #FFFFFF;
+            --shadow: 0 2px 6px rgba(15, 43, 91, 0.08);
+            --border-radius: 6px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-blue);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .logo strong {
+            color: var(--secondary-orange);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-orange);
+            color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background-color: #e6971f;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(15, 43, 91, 0.05);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--medium-gray);
+            border: 1px solid var(--medium-gray);
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        /* Profile Card (left column) */
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            border: 1px solid rgba(15, 43, 91, 0.1);
+            align-self: start;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--secondary-orange);
+        }
+
+        .avatar i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+        }
+
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .profile-phone {
+            color: var(--medium-gray);
+            font-size: 0.95rem;
+            margin: 0.25rem 0 1rem;
+        }
+
+        .profile-detail {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(15, 43, 91, 0.1);
+            padding-bottom: 0.75rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            margin-top: 0.2rem;
+        }
+
+        .skills-list, .languages-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .skill-tag, .language-tag {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .edit-profile-btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        /* Right column – Task sections */
+        .tasks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            border: 1px solid rgba(15, 43, 91, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            border-left: 4px solid transparent;
+            transition: var(--transition);
+        }
+
+        .task-item.open {
+            border-left-color: var(--accent-green);
+        }
+        .task-item.assigned {
+            border-left-color: var(--secondary-orange);
+        }
+        .task-item.completed {
+            border-left-color: var(--primary-blue);
+            opacity: 0.8;
+        }
+        .task-item.canceled {
+            border-left-color: var(--medium-gray);
+            opacity: 0.6;
+        }
+
+        .task-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .task-title h3 {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            margin-bottom: 0;
+        }
+
+        .task-status {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .status-open { background: var(--accent-green); color: white; }
+        .status-assigned { background: var(--secondary-orange); color: var(--primary-blue); }
+        .status-completed { background: var(--primary-blue); color: white; }
+        .status-canceled { background: var(--medium-gray); color: white; }
+
+        .task-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            margin-bottom: 0.75rem;
+        }
+
+        .task-details i {
+            color: var(--secondary-orange);
+            width: 16px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .task-actions .btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--medium-gray);
+            padding: 2rem;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
+            width: 100%;
+            padding: 10px 16px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(15, 43, 91, 0.2);
+            border-radius: 40px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .modal-content textarea {
+            border-radius: 12px;
+            resize: vertical;
+        }
+
+        .modal-content button {
+            margin-top: 0.5rem;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--medium-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="logo">PIECEWORKS <strong>ZAMBIA</strong></div>
+            <div>
+                <a href="index.html" class="btn btn-secondary"><i class="fas fa-home"></i> Home</a>
+                <button class="btn btn-outline" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid" id="dashboardContent">
+            <!-- Profile Card (left) - will be populated by JS -->
+            <div class="profile-card" id="profileCard"></div>
+
+            <!-- Right Column: Task Sections -->
+            <div class="tasks-section">
+                <!-- Post New Task Button -->
+                <div style="text-align: right;">
+                    <button class="btn btn-primary" id="postTaskBtn"><i class="fas fa-plus"></i> Post a New Task</button>
+                </div>
+
+                <!-- Tasks I've Posted -->
+                <div class="section-card" id="postedTasksSection">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Tasks I've Posted</h2>
+                    </div>
+                    <div class="task-list" id="postedTasksList"></div>
+                </div>
+
+                <!-- Tasks I'm Assigned To (Accepted) -->
+                <div class="section-card" id="assignedTasksSection">
+                    <div class="section-header">
+                        <h2><i class="fas fa-check-circle"></i> Tasks I'm Doing</h2>
+                    </div>
+                    <div class="task-list" id="assignedTasksList"></div>
+                </div>
+
+                <!-- Task History (Completed / Canceled) -->
+                <div class="section-card" id="historyTasksSection">
+                    <div class="section-header">
+                        <h2><i class="fas fa-history"></i> Task History</h2>
+                    </div>
+                    <div class="task-list" id="historyTasksList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Profile -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeEditModal">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm">
+                <input type="text" id="editFirstName" placeholder="First Name" required>
+                <input type="text" id="editLastName" placeholder="Last Name" required>
+                <input type="text" id="editPhone" placeholder="Phone Number" required>
+                <textarea id="editBio" placeholder="Bio / About you" rows="3"></textarea>
+                <input type="text" id="editSkills" placeholder="Skills (comma separated, e.g., Cleaning, Gardening)">
+                <input type="text" id="editLanguages" placeholder="Languages (comma separated, e.g., English, Bemba)">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Post New Task -->
+    <div class="modal" id="postTaskModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closePostModal">&times;</span>
+            <h2>Post a New Task</h2>
+            <form id="postTaskForm">
+                <input type="text" id="taskTitle" placeholder="Task Title" required>
+                <textarea id="taskDesc" placeholder="Detailed description" rows="3" required></textarea>
+                <select id="taskCategory" required>
+                    <option value="">Select Category</option>
+                    <option>Cleaning</option>
+                    <option>Gardening</option>
+                    <option>Moving</option>
+                    <option>Repairs</option>
+                    <option>Tutoring</option>
+                    <option>Delivery</option>
+                    <option>Other</option>
+                </select>
+                <input type="text" id="taskLocation" placeholder="Location (e.g., Lusaka, Woodlands)" required>
+                <input type="date" id="taskDate" required>
+                <input type="time" id="taskTime" required>
+                <input type="number" id="taskPrice" placeholder="Price (K)" required>
+                <button type="submit" class="btn btn-primary">Post Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA & HELPERS ====================
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html'; // redirect if not logged in
+        }
+
+        // Load tasks from localStorage or initialize
+        let tasks = JSON.parse(localStorage.getItem('pw_tasks')) || [];
+
+        // Save tasks helper
+        function saveTasks() {
+            localStorage.setItem('pw_tasks', JSON.stringify(tasks));
+        }
+
+        // Save user helper
+        function saveUser(updatedUser) {
+            // Update in users array
+            const users = JSON.parse(localStorage.getItem('pw_users')) || [];
+            const index = users.findIndex(u => u.phone === currentUser.phone);
+            if (index !== -1) {
+                users[index] = updatedUser;
+                localStorage.setItem('pw_users', JSON.stringify(users));
+            }
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            // Update global currentUser
+            Object.assign(currentUser, updatedUser);
+        }
+
+        // ==================== RENDER PROFILE CARD ====================
+        function renderProfile() {
+            const profileCard = document.getElementById('profileCard');
+            const skills = currentUser.skills || [];
+            const languages = currentUser.languages || [];
+
+            profileCard.innerHTML = `
+                <div class="profile-header">
+                    <div class="avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="profile-name">${currentUser.firstName} ${currentUser.lastName}</div>
+                    <div class="profile-phone"><i class="fas fa-phone-alt"></i> ${currentUser.phone}</div>
+                </div>
+                <div class="profile-detail">
+                    <div class="detail-label">Bio</div>
+                    <div class="detail-value">${currentUser.bio || 'No bio yet.'}</div>
+                </div>
+                <div class="profile-detail">
+                    <div class="detail-label">Skills</div>
+                    <div class="skills-list">
+                        ${skills.length ? skills.map(s => `<span class="skill-tag">${s}</span>`).join('') : '<span class="detail-value">None listed</span>'}
+                    </div>
+                </div>
+                <div class="profile-detail">
+                    <div class="detail-label">Languages</div>
+                    <div class="languages-list">
+                        ${languages.length ? languages.map(l => `<span class="language-tag">${l}</span>`).join('') : '<span class="detail-value">None listed</span>'}
+                    </div>
+                </div>
+                <button class="btn btn-secondary edit-profile-btn" id="editProfileBtn"><i class="fas fa-edit"></i> Edit Profile</button>
+            `;
+            document.getElementById('editProfileBtn').addEventListener('click', openEditModal);
+        }
+
+        // ==================== RENDER TASKS ====================
+        function renderTasks() {
+            const postedList = document.getElementById('postedTasksList');
+            const assignedList = document.getElementById('assignedTasksList');
+            const historyList = document.getElementById('historyTasksList');
+
+            // Filter tasks
+            const posted = tasks.filter(t => t.postedBy === currentUser.phone && (t.status === 'open' || t.status === 'assigned'));
+            const assigned = tasks.filter(t => t.assignedTo === currentUser.phone && (t.status === 'assigned' || t.status === 'open')); // open but assigned to someone? Actually assigned tasks should be assigned to user and not completed/canceled
+            const history = tasks.filter(t => (t.postedBy === currentUser.phone || t.assignedTo === currentUser.phone) && (t.status === 'completed' || t.status === 'canceled'));
+
+            postedList.innerHTML = renderTaskItems(posted, 'posted');
+            assignedList.innerHTML = renderTaskItems(assigned, 'assigned');
+            historyList.innerHTML = renderTaskItems(history, 'history');
+        }
+
+        function renderTaskItems(taskArray, type) {
+            if (taskArray.length === 0) {
+                return `<div class="empty-state"><i class="fas fa-inbox"></i> No tasks to show.</div>`;
+            }
+
+            return taskArray.map(task => {
+                const statusClass = task.status === 'open' ? 'status-open' : task.status === 'assigned' ? 'status-assigned' : task.status === 'completed' ? 'status-completed' : 'status-canceled';
+                const statusText = task.status.charAt(0).toUpperCase() + task.status.slice(1);
+
+                // Determine action buttons based on type and status
+                let actions = '';
+                if (type === 'posted') {
+                    if (task.status === 'open') {
+                        actions = `<button class="btn btn-outline cancel-task" data-id="${task.id}"><i class="fas fa-times"></i> Cancel</button>`;
+                    } else if (task.status === 'assigned') {
+                        actions = `
+                            <button class="btn btn-outline complete-task" data-id="${task.id}"><i class="fas fa-check"></i> Mark Completed</button>
+                            <button class="btn btn-outline cancel-task" data-id="${task.id}"><i class="fas fa-times"></i> Cancel</button>
+                        `;
+                    }
+                } else if (type === 'assigned') {
+                    if (task.status === 'assigned' || task.status === 'open') {
+                        actions = `
+                            <button class="btn btn-outline complete-task" data-id="${task.id}"><i class="fas fa-check"></i> Mark Completed</button>
+                            <button class="btn btn-outline cancel-task" data-id="${task.id}"><i class="fas fa-times"></i> Cancel</button>
+                        `;
+                    }
+                } else {
+                    // History: no actions
+                }
+
+                return `
+                    <div class="task-item ${task.status}">
+                        <div class="task-title">
+                            <h3>${task.title}</h3>
+                            <span class="task-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="task-details">
+                            <span><i class="fas fa-tag"></i> ${task.category}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${task.location}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${task.date} at ${task.time}</span>
+                            <span><i class="fas fa-money-bill-wave"></i> K${task.price}</span>
+                        </div>
+                        <p style="font-size:0.9rem; margin-bottom:0.5rem;">${task.description}</p>
+                        <div class="task-actions">
+                            ${actions}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== MODALS ====================
+        // Edit Profile Modal
+        const editModal = document.getElementById('editProfileModal');
+        const closeEdit = document.getElementById('closeEditModal');
+
+        function openEditModal() {
+            document.getElementById('editFirstName').value = currentUser.firstName || '';
+            document.getElementById('editLastName').value = currentUser.lastName || '';
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editBio').value = currentUser.bio || '';
+            document.getElementById('editSkills').value = (currentUser.skills || []).join(', ');
+            document.getElementById('editLanguages').value = (currentUser.languages || []).join(', ');
+            editModal.classList.add('active');
+        }
+
+        closeEdit.addEventListener('click', () => editModal.classList.remove('active'));
+        window.addEventListener('click', (e) => { if (e.target === editModal) editModal.classList.remove('active'); });
+
+        document.getElementById('editProfileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const updatedUser = {
+                ...currentUser,
+                firstName: document.getElementById('editFirstName').value.trim(),
+                lastName: document.getElementById('editLastName').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                bio: document.getElementById('editBio').value.trim(),
+                skills: document.getElementById('editSkills').value.split(',').map(s => s.trim()).filter(s => s),
+                languages: document.getElementById('editLanguages').value.split(',').map(l => l.trim()).filter(l => l)
+            };
+            saveUser(updatedUser);
+            renderProfile();
+            editModal.classList.remove('active');
+        });
+
+        // Post Task Modal
+        const postModal = document.getElementById('postTaskModal');
+        const closePost = document.getElementById('closePostModal');
+        const postBtn = document.getElementById('postTaskBtn');
+
+        postBtn.addEventListener('click', () => postModal.classList.add('active'));
+        closePost.addEventListener('click', () => postModal.classList.remove('active'));
+        window.addEventListener('click', (e) => { if (e.target === postModal) postModal.classList.remove('active'); });
+
+        document.getElementById('postTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newTask = {
+                id: Date.now().toString(), // simple unique ID
+                title: document.getElementById('taskTitle').value.trim(),
+                description: document.getElementById('taskDesc').value.trim(),
+                category: document.getElementById('taskCategory').value,
+                location: document.getElementById('taskLocation').value.trim(),
+                date: document.getElementById('taskDate').value,
+                time: document.getElementById('taskTime').value,
+                price: parseFloat(document.getElementById('taskPrice').value),
+                status: 'open',
+                postedBy: currentUser.phone,
+                assignedTo: null
+            };
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
+            postModal.classList.remove('active');
+            e.target.reset();
+        });
+
+        // ==================== TASK ACTIONS (Complete / Cancel) ====================
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('complete-task') || e.target.parentElement.classList.contains('complete-task')) {
+                const btn = e.target.closest('.complete-task');
+                const taskId = btn.dataset.id;
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = 'completed';
+                    saveTasks();
+                    renderTasks();
+                }
+            }
+            if (e.target.classList.contains('cancel-task') || e.target.parentElement.classList.contains('cancel-task')) {
+                const btn = e.target.closest('.cancel-task');
+                const taskId = btn.dataset.id;
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = 'canceled';
+                    saveTasks();
+                    renderTasks();
+                }
+            }
+        });
+
+        // ==================== LOGOUT ====================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        });
+
+        // ==================== INIT ====================
+        renderProfile();
+        renderTasks();
+    </script>
+</body>
+</html>
