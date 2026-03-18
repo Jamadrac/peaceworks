@@ -35,6 +35,19 @@ const corsOptions: cors.CorsOptions = {
 };
 
 app.use(cors(corsOptions));
+// Ensure CORS headers are present even on errors and non-simple requests
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(logger("dev"));
@@ -46,6 +59,15 @@ app.use("/api/tasks", taskRouter);
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Backend running", db: "sqlite" });
+});
+
+// Global error handler to return JSON and keep CORS headers
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, _req: Request, res: Response, _next: any) => {
+  console.error("Unhandled error:", err);
+  res
+    .status(500)
+    .json({ message: "Internal server error", detail: err?.message || err || "unknown" });
 });
 
 app.listen(port, "0.0.0.0", () => {
