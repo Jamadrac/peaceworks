@@ -3,9 +3,9 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import logger from "morgan";
 import os from "os";
-import userRouter from "./src/User/router";
-import uploadRouter from "./upload/router";
-import taskRouter from "./src/Task/router";
+import userRouter from "./User/router";
+import uploadRouter from "../upload/router";
+import taskRouter from "./Task/router";
 
 const app: Express = express();
 const port = Number(process.env.PORT || 8888);

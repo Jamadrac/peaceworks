@@ -1,0 +1,29 @@
+# Node / TypeScript build artifacts
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+
+# Environment & secrets
+# .env*
+# !.env.example
+
+# Logs & caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+.cache/
+
+# Prisma / database
+prisma/dev.db
+prisma/dev.db-journal
+
+# Uploads or generated files
+upload/
+
+# OS cruft
+.DS_Store
+Thumbs.db
