@@ -58,7 +58,7 @@ app.use("/api/uploads", uploadRouter);
 app.use("/api/tasks", taskRouter);
 
 app.get("/", (_req: Request, res: Response) => {
-  res.json({ message: "Backend running", db: "sqlite" });
+  res.json({ message: "Backend running", });
 });
 
 // Global error handler to return JSON and keep CORS headers
