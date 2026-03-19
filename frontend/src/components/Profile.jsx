@@ -3,6 +3,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import './Profile.css'
 import { authState, defaultUserState, userState } from '../state/authAtoms'
 import { API_BASE } from '../config/api'
+import { deleteR2File } from '../utils/r2'
 const emptyEditForm = {
   firstName: '',
   lastName: '',
@@ -23,6 +24,8 @@ function Profile() {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
   const [loadingTasks, setLoadingTasks] = useState(true)
   const [actionState, setActionState] = useState({ status: 'idle', message: '' })
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
   const isSuperUser = useMemo(() => {
     const role = (user?.role || '').toString().toLowerCase().replace(/[\s_-]+/g, ' ').trim()
     return role === 'super user' || role === 'superuser' || role === 'super admin' || role === 'super'
@@ -187,7 +190,17 @@ function Profile() {
         <div className="profile-card">
           <div className="profile-header">
             <div className="avatar">
-              <i className="fas fa-user-circle"></i>
+              {user.profilePicture ? (
+                <img
+                  src={user.profilePicture}
+                  alt="Profile avatar"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              ) : (
+                <i className="fas fa-user-circle"></i>
+              )}
             </div>
             <div className="profile-name">
               {user.firstName || user.username} {user.lastName || ''}
