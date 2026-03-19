@@ -249,6 +249,23 @@ select:focus {
   font-weight: 600;
 }
 
+.forgot-link {
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.forgot-link a {
+  font-size: 0.9rem;
+  color: var(--primary-blue);
+  text-decoration: none;
+}
+
+.forgot-link a:hover {
+  color: var(--secondary-orange);
+  text-decoration: underline;
+}
+
 .banner-error {
   background: #ffe5e5;
   color: #b00020;

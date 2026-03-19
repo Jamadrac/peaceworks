@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node --transpile-only src/main.ts\"",
     "build": "npm run prisma:generate && tsc",
     "start": "node dist/main.js",
     "prisma:generate": "prisma generate",
@@ -23,8 +23,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "http-status-codes": "^2.3.0",
-    "multer": "^1.4.5-lts.1",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.8",
     "nodemon": "^3.1.14",
     "pg": "^8.13.1"
   },
@@ -32,10 +33,12 @@
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/multer": "^1.4.12",
     "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.16.5",
+    "@types/nodemailer": "^6.4.14",
     "prisma": "^7.5.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   },

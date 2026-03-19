@@ -1,3 +1,7 @@
 #root {
   min-height: 100%;
 }
+
+.app-main {
+  padding-top: 88px; /* space for fixed navbar */
+}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import './Landing.css'
 import { userState } from '../state/authAtoms'
@@ -79,46 +79,8 @@ function Landing() {
     }
   }
 
-  const navLinks = useMemo(
-    () => [
-      { label: 'Browse Tasks', href: '#tasks' },
-      { label: 'How It Works', href: '#how-it-works' },
-      { label: 'For You', href: '#features' },
-      { label: 'Community', href: '#community' },
-      { label: 'FAQ', href: '#faq' },
-    ],
-    [],
-  )
-
   return (
     <div className="landing-page">
-      <nav>
-        <div className="nav-container">
-          <div className="logo">
-            PIECEWORKS <strong>ZAMBIA</strong>
-          </div>
-          <div className="nav-links">
-            {navLinks.map((link) => (
-              <a key={link.label} href={link.href}>
-                {link.label}
-              </a>
-            ))}
-            {isLoggedIn ? (
-              <a href="#/profile" className="btn-secondary">
-                Profile
-              </a>
-            ) : (
-              <a href="#/login" className="btn-secondary">
-                Log In
-              </a>
-            )}
-            <a href={isLoggedIn ? '#/post' : '#/login'} className="btn-primary">
-              Get Started
-            </a>
-          </div>
-        </div>
-      </nav>
-
       <section className="hero">
         <div className="hero-left">
           <div className="hero-content">
@@ -419,39 +381,9 @@ function Landing() {
           </a>
         </div>
       </section>
-
-      <footer>
-        <div className="container">
-          <div className="footer-content">
-            <div className="logo" style={{ color: 'white', marginBottom: '1.5rem' }}>
-              PIECEWORKS <strong>ZAMBIA</strong>
-            </div>
-            <div className="footer-links">
-              <a href="about.html">About Us</a>
-              <a href="#">Contact</a>
-              <a href="#">Safety Tips</a>
-              <a href="#">Terms</a>
-              <a href="#">Privacy</a>
-              <a href="#">For Task Posters</a>
-              <a href="#">For Workers</a>
-            </div>
-            <div className="contact-info">
-              <p>
-                <i className="fas fa-envelope"></i> hello@pieceworks-zm.co.zm
-              </p>
-              <p>
-                <i className="fas fa-phone"></i> +260 211 123 456 |{' '}
-                <i className="fas fa-map-marker-alt"></i> Lusaka, Zambia
-              </p>
-            </div>
-            <p style={{ marginTop: '2rem', opacity: 0.7, fontSize: '0.9rem' }}>
-              © 2023 Pieceworks Zambia. Neighbors helping neighbors, one task at a time.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
 
 export default Landing
+

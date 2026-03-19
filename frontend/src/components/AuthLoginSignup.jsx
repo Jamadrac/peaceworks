@@ -31,6 +31,7 @@ function AuthLoginSignup() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [needsVerification, setNeedsVerification] = useState(false)
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault()
@@ -48,8 +49,12 @@ function AuthLoginSignup() {
       })
 
       if (!response.ok) {
-        const text = await response.text()
-        throw new Error(text || 'Login failed')
+        const result = await response.json().catch(() => ({}))
+        if (response.status === 403 && result?.needsVerification) {
+          setNeedsVerification(true)
+          throw new Error(result?.message || 'Email not verified. Please verify your email.')
+        }
+        throw new Error(result?.message || 'Login failed')
       }
 
       const data = await response.json()
@@ -58,6 +63,34 @@ function AuthLoginSignup() {
       window.location.hash = '#/'
     } catch (err) {
       setError(err.message || 'Login failed')
+      if (err.message?.toLowerCase().includes('verify')) {
+        setNeedsVerification(true)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    setError('')
+    setMessage('')
+    setLoading(true)
+    try {
+      const response = await fetch(`${API_BASE}/user/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: loginForm.email.trim(),
+          frontendUrl: `${window.location.origin}#`,
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result?.message || 'Failed to resend verification email')
+      }
+      setMessage('Verification email resent. Check your inbox for the code.')
+    } catch (err) {
+      setError(err.message || 'Failed to resend verification email')
     } finally {
       setLoading(false)
     }
@@ -77,8 +110,9 @@ function AuthLoginSignup() {
         nrc_card_id: registerForm.nrc_card_id.trim(),
         role: registerForm.role,
         jobTitle: registerForm.jobTitle.trim() || undefined,
-        frontendUrl: window.location.origin,
-      }
+          // Include hash so verification links land inside the SPA
+          frontendUrl: `${window.location.origin}#`,
+        }
 
       const response = await fetch(`${API_BASE}/user/register`, {
         method: 'POST',
@@ -129,6 +163,20 @@ function AuthLoginSignup() {
           {error || message}
         </div>
       )}
+      {needsVerification && (
+        <div className="banner banner-error">
+          <div>Email not verified. Please check your inbox.</div>
+          <button
+            className="btn"
+            type="button"
+            disabled={loading || !loginForm.email.trim()}
+            onClick={handleResendVerification}
+            style={{ marginTop: '8px' }}
+          >
+            {loading ? 'Resending...' : 'Resend verification email'}
+          </button>
+        </div>
+      )}
 
       {activeTab === 'login' && (
         <form className="form active" onSubmit={handleLoginSubmit}>
@@ -150,6 +198,9 @@ function AuthLoginSignup() {
             }
             required
           />
+          <div className="forgot-link">
+            <a href="#/forgot-password">Forgot password?</a>
+          </div>
           <button className="btn" type="submit" disabled={loading}>
             {loading ? 'Signing in...' : 'Log In'}
           </button>

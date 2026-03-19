@@ -102,7 +102,15 @@ export const userRegisterController = async (req: Request, res: Response) => {
       }),
     };
 
-    await sendMail(emailOptions);
+    try {
+      await sendMail(emailOptions);
+    } catch (mailErr: any) {
+      console.error("Error sending verification email:", mailErr);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: "Registration failed to send verification email",
+        error: mailErr?.message || mailErr,
+      });
+    }
 
     return res.status(StatusCodes.OK).json({ 
       username: user.username,
@@ -257,7 +265,17 @@ export const userForgotPasswordController = async (req: Request, res: Response) 
       }),
     };
 
-    await sendMail(emailOptions);
+    try {
+      await sendMail(emailOptions);
+    } catch (mailErr: any) {
+      console.error("Error sending verification email:", mailErr);
+      // Rollback created user to avoid orphaned accounts without email delivery
+      await prisma.user.delete({ where: { id: user.id } }).catch(() => null);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: "Registration failed to send verification email",
+        error: mailErr?.message || mailErr,
+      });
+    }
 
     return res
       .status(StatusCodes.OK)
@@ -567,6 +585,65 @@ export const verifyEmailController = async (req: Request, res: Response) => {
   }
 };
 
+export const resendVerificationController = async (req: Request, res: Response) => {
+  try {
+    const { email, frontendUrl } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json("User not found");
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(StatusCodes.OK).json("Email already verified");
+    }
+
+    const verificationToken = generateOTP();
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerificationToken: verificationToken },
+    });
+
+    const bodyContent = `
+      <p class="text-gray-800 text-base">Dear ${user.username},</p>
+      <p class="text-gray-700 text-base mt-2">
+        Please verify your email address by using the following code:
+      </p>
+      <div class="text-center text-xl font-bold text-green-700 my-4 p-2 bg-green-100 rounded-md max-w-xs mx-auto">
+        ${verificationToken}
+      </div>
+      <p class="text-gray-700 text-base mt-2">Or click the link below to verify your email:</p>
+      <div class="text-center mt-4">
+        <a href="${frontendUrl}/verify/email/${verificationToken}" 
+           class="bg-green-500 text-white px-4 py-2 rounded inline-block">
+          Verify Email  
+        </a>
+      </div>
+      <p class="text-gray-700 text-base mt-2">
+        If you did not request this change, please contact support immediately.
+      </p>
+    `;
+
+    const emailOptions = {
+      to: user.email,
+      subject: "Verify Your Email Address",
+      html: generateEmailLayout({
+        title: "Verify Your Email Address",
+        bodyContent,
+      }),
+    };
+
+    await sendMail(emailOptions);
+    return res.status(StatusCodes.OK).json("Verification email resent");
+  } catch (error: any) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      message: "Failed to resend verification email",
+      error: error?.stack || error?.message || error,
+    });
+  }
+};
+
 export const getAllUsersController = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -711,7 +788,7 @@ userRouter.post("/update/password", verifyEmailAndOTP);
 userRouter.get('/users', getAllUsersController);
 userRouter.patch("/profile/update", updateUserProfileController);
 userRouter.post('/verify-email', verifyEmailController);
-userRouter.post('/resend-verification', verifyEmailController);
+userRouter.post('/resend-verification', resendVerificationController);
 userRouter.delete('/usersof/:userId', deleteUserController);
 userRouter.patch('/users/:id', async (req: Request, res: Response) => {
   try {
