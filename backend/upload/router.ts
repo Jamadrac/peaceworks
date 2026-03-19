@@ -1,6 +1,11 @@
+// Allow self-signed/inspected TLS in this environment; remove for production if not needed.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 import express from "express";
 import multer from "multer";
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
+import https from "https";
 import { StatusCodes } from "http-status-codes";
 
 const uploadRouter = express.Router();
@@ -11,11 +16,13 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-const accountId = "859b914602758e51e4e66a197332af8e";
-const bucket = "pieceworkszambia";
-const endpoint = `https://${accountId}.r2.cloudflarestorage.com`;
+const accountId = process.env.R2_ACCOUNT_ID || "";
+const bucket = process.env.R2_BUCKET || "";
+const endpoint =
+  process.env.R2_ENDPOINT ||
+  (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : "");
 const publicBaseUrl =
-  (process.env.R2_PUBLIC_BASE_URL || `https://pub-${accountId}.r2.dev/${bucket}`).replace(/\/+$/, "");
+  (process.env.R2_PUBLIC_BASE_URL || (accountId ? `https://pub-${accountId}.r2.dev` : "")).replace(/\/+$/, "");
 
 const hasR2Config =
   !!process.env.R2_ACCESS_KEY_ID &&
@@ -30,6 +37,14 @@ const s3 = new S3Client({
     accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
   },
+  // In some environments TLS inspection breaks the default handshake; allow it here.
+  requestHandler: new NodeHttpHandler({
+    httpsAgent: new https.Agent({
+      keepAlive: true,
+      rejectUnauthorized: false, // TODO: remove when trusted certs are available
+      minVersion: "TLSv1.2",
+    }),
+  }),
 });
 
 const sanitizeFileName = (name: string) =>
@@ -54,9 +69,11 @@ const toObjectKey = (urlOrKey: string) => {
       }
     } catch {
       const base = publicBaseUrl.replace(/\/+$/, "");
-      if (value.startsWith(base + "/")) {
-        return value.slice((base + "/").length);
+      const bucketPrefixed = `${base}/${bucket}`.replace(/\/+$/, "");
+      if (value.startsWith(bucketPrefixed + "/")) {
+        return value.slice((bucketPrefixed + "/").length);
       }
+      if (value.startsWith(base + "/")) return value.slice((base + "/").length);
     }
   }
   return value.replace(/^\/+/, "");

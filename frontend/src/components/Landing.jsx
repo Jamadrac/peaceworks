@@ -32,6 +32,21 @@ function Landing() {
   const [tasks, setTasks] = useState([])
   const [activeFaq, setActiveFaq] = useState(null)
   const isLoggedIn = Boolean(user?.userId || user?.email || user?.phoneNumber)
+  const toPublicImage = (url) => {
+    if (!url) return url
+    if (url.includes('.r2.dev/')) return url
+    // Legacy remap: fix old account/bucket prefixes
+    if (url.includes('piecework-images/')) {
+      const cleaned = url.replace(/https?:\/\/[^/]+\//, '').replace(/^(madac|pieceworkszambia)\//, '')
+      return `https://pub-515711e07e0b4b9fad3ce8d5ada6bfa5.r2.dev/${cleaned}`
+    }
+    const match = url.match(/^https?:\/\/([^\.]+)\.r2\.cloudflarestorage\.com\/([^/]+)\/(.+)$/i)
+    if (match) {
+      const [, acc, buck, key] = match
+      return `https://pub-${acc}.r2.dev/${buck}/${key}`
+    }
+    return url
+  }
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -40,7 +55,12 @@ function Landing() {
         if (!res.ok) throw new Error('Failed to load tasks')
         const data = await res.json()
         if (Array.isArray(data)) {
-          setTasks(data)
+          setTasks(
+            data.map((t) => ({
+              ...t,
+              imageUrl: toPublicImage(t.imageUrl || t.image),
+            })),
+          )
         }
       } catch (err) {
         console.error('Landing tasks load failed:', err.message || err)

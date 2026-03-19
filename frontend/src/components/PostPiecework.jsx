@@ -4,9 +4,6 @@ import { useRecoilValue } from 'recoil'
 import { userState } from '../state/authAtoms'
 import { API_BASE } from '../config/api'
 
-const DEFAULT_IMAGE =
-  'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600'
-
 function generateJobId() {
   const now = new Date()
   const year = now.getFullYear().toString().slice(2)
@@ -84,6 +81,11 @@ function PostPiecework() {
       return
     }
 
+    if (!form.imageUrl) {
+      setUploadError('Please upload an image (stored in R2) before posting.')
+      return
+    }
+
     const payload = {
       publicId: jobId || generateJobId(),
       status: form.status,
@@ -102,7 +104,7 @@ function PostPiecework() {
       employerId: form.employerId,
       employerUserId: form.employerUserId,
       verified: form.verified,
-      imageUrl: form.imageUrl || DEFAULT_IMAGE,
+      imageUrl: form.imageUrl,
       acceptedTimestamp: form.acceptedTimestamp || null,
     }
 
@@ -419,12 +421,25 @@ function PostPiecework() {
               <span className="helper-text">Uploading image...</span>
             ) : uploadError ? (
               <span className="helper-text error-text">{uploadError}</span>
-            ) : (
-              <span className="helper-text">Select a file to upload to R2.</span>
-            )}
+              ) : (
+                <span className="helper-text">Select a file to upload to R2.</span>
+              )}
             {form.imageUrl ? (
-              <div className="image-preview">
-                <img src={form.imageUrl} alt="Thumbnail preview" />
+              <div className="image-preview r2-review">
+                <div className="image-preview-header">
+                  <span className="helper-text">R2 image saved</span>
+                  <a href={form.imageUrl} target="_blank" rel="noreferrer" className="helper-text">
+                    Open in new tab
+                  </a>
+                </div>
+                <code className="helper-text" style={{ wordBreak: 'break-all' }}>{form.imageUrl}</code>
+                <img
+                  src={form.imageUrl}
+                  alt="Thumbnail preview"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
               </div>
             ) : null}
           </div>
