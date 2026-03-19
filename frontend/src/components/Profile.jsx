@@ -26,6 +26,19 @@ function Profile() {
   const [actionState, setActionState] = useState({ status: 'idle', message: '' })
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [avatarError, setAvatarError] = useState('')
+  const avatarFolder = useMemo(() => {
+    const raw =
+      user?.userId?.toString() ||
+      user?.email ||
+      user?.phoneNumber ||
+      user?.username ||
+      'profile'
+    return raw
+      .toString()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'profile'
+  }, [user?.userId, user?.email, user?.phoneNumber, user?.username])
   const isSuperUser = useMemo(() => {
     const role = (user?.role || '').toString().toLowerCase().replace(/[\s_-]+/g, ' ').trim()
     return role === 'super user' || role === 'superuser' || role === 'super admin' || role === 'super'
@@ -335,6 +348,83 @@ function Profile() {
           </button>
           <h2>Edit Profile</h2>
           <form onSubmit={handleEditSubmit}>
+            <label className="helper-text" style={{ marginBottom: '0.35rem' }}>
+              Profile picture (stored in R2)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              disabled={avatarUploading}
+              onChange={async (event) => {
+                const file = event.target.files?.[0]
+                if (!file) return
+                setAvatarError('')
+                setAvatarUploading(true)
+                try {
+                  const formData = new FormData()
+                  formData.append('file', file)
+                  formData.append('folder', `profile-pictures/${avatarFolder}`)
+                  const response = await fetch(`${API_BASE}/uploads/file`, {
+                    method: 'POST',
+                    body: formData,
+                  })
+                  if (!response.ok) {
+                    const text = await response.text()
+                    throw new Error(text || `Upload failed (${response.status})`)
+                  }
+                  const data = await response.json()
+                  const uploadedUrl = data.fileUrl || data.imageUrl || ''
+                  if (!uploadedUrl) throw new Error('Upload succeeded but no URL was returned')
+                  setUser((prev) => ({ ...prev, profilePicture: uploadedUrl }))
+                } catch (err) {
+                  setAvatarError(err.message || 'Upload failed')
+                } finally {
+                  setAvatarUploading(false)
+                }
+              }}
+            />
+            {avatarUploading && <span className="helper-text">Uploading...</span>}
+            {avatarError && <span className="helper-text error-text">{avatarError}</span>}
+            {user.profilePicture ? (
+              <div className="avatar-preview">
+                <div className="avatar-preview-header">
+                  <span className="helper-text">Current R2 image</span>
+                  <div className="avatar-preview-actions">
+                    <a href={user.profilePicture} target="_blank" rel="noreferrer" className="helper-text">
+                      Open
+                    </a>
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      disabled={avatarUploading}
+                      onClick={async () => {
+                        setAvatarError('')
+                        try {
+                          await deleteR2File(user.profilePicture)
+                          setUser((prev) => ({ ...prev, profilePicture: null }))
+                        } catch (err) {
+                          setAvatarError(err.message || 'Delete failed')
+                        }
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <code className="helper-text" style={{ wordBreak: 'break-all' }}>
+                  {user.profilePicture}
+                </code>
+                <img
+                  src={user.profilePicture}
+                  alt="Profile preview"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              </div>
+            ) : (
+              <span className="helper-text">No profile image yet</span>
+            )}
             <input
               type="text"
               placeholder="First Name"
