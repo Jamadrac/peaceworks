@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './PostPiecework.css'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../state/authAtoms'
@@ -42,6 +42,7 @@ function PostPiecework() {
     imageUrl: '',
     acceptedTimestamp: '',
   })
+  const todayISO = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   useEffect(() => {
     setJobId(generateJobId())
@@ -59,6 +60,10 @@ function PostPiecework() {
       employerUserId: employerId,
     }))
   }, [user])
+
+  useEffect(() => {
+    setForm((prev) => (prev.date ? prev : { ...prev, date: todayISO }))
+  }, [todayISO])
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -226,14 +231,16 @@ function PostPiecework() {
               <i className="far fa-calendar-alt"></i> Date(s) *
             </label>
             <input
-              type="text"
+              type="date"
               name="date"
-              placeholder="e.g. Sat, 15 Feb  or  Every Mon, Wed"
+              className="apple-date-input"
+              min={todayISO}
               value={form.date ?? ''}
               onChange={handleChange}
               title="Date or schedule for the work."
               required
             />
+            <div className="helper-text">Starts from today; pick any future date.</div>
           </div>
 
           <div className="form-group">

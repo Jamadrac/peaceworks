@@ -121,6 +121,31 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(249, 168, 38, 0.1);
 }
 
+.apple-date-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #f7f7f9;
+  border: 1px solid #dcdce0;
+  border-radius: 14px;
+  padding: 0.95rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 26px rgba(15, 43, 91, 0.06);
+  transition: var(--transition);
+}
+
+.apple-date-input:focus {
+  border-color: #9cc0ff;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.18);
+  background: #ffffff;
+}
+
+.apple-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(26%);
+  padding-left: 4px;
+}
+
 .readonly-input {
   background-color: var(--light-gray);
   color: var(--medium-gray);

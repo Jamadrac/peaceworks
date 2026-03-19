@@ -11,10 +11,11 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-const accountId =  "859b914602758e51e4e66a197332af8e";
+const accountId = "859b914602758e51e4e66a197332af8e";
 const bucket = "pieceworkszambia";
-const endpoint =  `https://${accountId}.r2.cloudflarestorage.com`;
-const publicBaseUrl = `https://${accountId}.r2.cloudflarestorage.com/${bucket}`;
+const endpoint = `https://${accountId}.r2.cloudflarestorage.com`;
+const publicBaseUrl =
+  (process.env.R2_PUBLIC_BASE_URL || `https://pub-${accountId}.r2.dev/${bucket}`).replace(/\/+$/, "");
 
 const hasR2Config =
   !!process.env.R2_ACCESS_KEY_ID &&
@@ -126,7 +127,7 @@ uploadRouter.post("/file", upload.single("file"), async (req, res) => {
       }),
     );
 
-    const fileUrl = `${publicBaseUrl.replace(/\/+$/, "")}/${key}`;
+    const fileUrl = `${publicBaseUrl}/${key}`;
 
     return res.status(StatusCodes.OK).json({
       message: "File uploaded successfully",
@@ -170,7 +171,7 @@ uploadRouter.post("/project-image", upload.single("image"), async (req, res) => 
       }),
     );
 
-    const imageUrl = `${publicBaseUrl.replace(/\/+$/, "")}/${key}`;
+    const imageUrl = `${publicBaseUrl}/${key}`;
 
     return res.status(StatusCodes.OK).json({
       message: "Image uploaded successfully",

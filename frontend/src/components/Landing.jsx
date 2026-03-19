@@ -120,12 +120,25 @@ function Landing() {
             ) : (
               tasks.map((task) => (
                 <div className="task-row" key={task.publicId || task.id}>
-                  <div
-                    className="task-image"
-                    style={{ backgroundImage: `url('${task.image}')` }}
-                  >
-                    <span className="task-category">{task.category}</span>
-                  </div>
+                  {(() => {
+                    const imageSrc =
+                      task.imageUrl ||
+                      task.image ||
+                      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&auto=format&fit=crop';
+                    return (
+                      <div
+                        className="task-image"
+                        style={{
+                          backgroundImage: `url('${imageSrc}')`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          backgroundRepeat: 'no-repeat',
+                        }}
+                      >
+                        <span className="task-category">{task.category}</span>
+                      </div>
+                    )
+                  })()}
                   <div className="task-content">
                     <div className="task-header-top">
                       <span className="job-id">

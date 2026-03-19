@@ -23,7 +23,19 @@ taskRouter.get("/", async (_req: Request, res: Response) => {
 taskRouter.post("/", async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const task = await prisma.task.create({ data });
+
+    // Coerce IDs to strings to satisfy schema
+    const employerId = data.employerId != null ? String(data.employerId) : "";
+    const employerUserId = data.employerUserId != null ? String(data.employerUserId) : employerId;
+
+    const payload = {
+      ...data,
+      publicId: data.publicId || null,
+      employerId,
+      employerUserId,
+    };
+
+    const task = await prisma.task.create({ data: payload });
     res.status(StatusCodes.CREATED).json(task);
   } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
